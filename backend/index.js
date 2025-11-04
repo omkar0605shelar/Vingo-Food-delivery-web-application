@@ -15,13 +15,22 @@ const PORT = process.env.PORT || 5000;
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({
-  origin:"https://localhost:5153",
+  origin:"http://localhost:5173",
   credentials:true
 }));
 
 app.use('/api/auth', authRouter);
 
-app.listen(8000, () =>{
-  connectDb();
-  console.log(`Server started ${PORT}`);
-})
+
+const startServer = async () => {
+  try {
+    await connectDb(); 
+    app.listen(PORT, () => {
+      console.log(`🚀 Server started on port ${PORT}`);
+    });
+  } catch (error) {
+    console.error("❌ Failed to start server:", error.message);
+  }
+};
+
+startServer();
