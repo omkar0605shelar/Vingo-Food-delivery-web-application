@@ -1,12 +1,16 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 
-*{
+* {
   /* ya scroll */
   scrollbar-width: none; /* Firefox*/
   -ms-overflow-style: none; /* IE/Edge old versions*/
 }
 
 ::-webkit-scrollbar,
-::-webkit-scrollbar{
+::-webkit-scrollbar {
   display: none; /*Chrome, Sfari, Opera*/
+}
+
+body {
+  font-family: "Open Sans", "Roboto", "Lato", "Montserrat", sans-serif;
 }

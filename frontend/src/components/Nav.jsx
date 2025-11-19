@@ -11,6 +11,7 @@ import { serverUrl } from "../App";
 import { setUserData } from "../redux/userSlice";
 
 function Nav() {
+  const cartItems = useSelector(state => state.user?.cartItems || []);
   const { userData, currentCity } = useSelector((state) => state.user);
   const { myShopData } = useSelector((state) => state.owner);
   const [showInfo, setShowInfo] = useState(false);
@@ -75,10 +76,10 @@ function Nav() {
           // User UI
           <>
             <CiSearch size={25} className="text-[#ff4d2d] md:hidden " />
-            <div className="relative cursor-pointer mr-5">
+            <div className="relative cursor-pointer mr-5" onClick={()=> navigate('/cart')}>
               <CiShoppingCart size={25} className="text-[#ff4d2d]" />
               <span className="absolute right-[-5px] top-[-12px] text-[#ff4d2d] font-bold">
-                0
+                {cartItems.length}
               </span>
             </div>
 

@@ -12,6 +12,8 @@ import useGetMyShop from './hooks/useGetMyShop';
 import CreateEditShop from './pages/CreateEditShop';
 import AddItem from './pages/AddItem';
 import EditItem from './pages/EditItem';
+import CartPage from './pages/CartPage';
+import CheckOut from './pages/CheckOut';
 import useGetShopByCity from './hooks/useGetShopByCity';
 import useGetItemsByCity from './hooks/useGetItemsByCity';
 
@@ -68,6 +70,18 @@ function App() {
         <Route
           path='/edit-item/:itemId'
           element={userData ? <EditItem /> : <Navigate to={'/signin'} />}
+        >
+        </Route>
+
+        <Route
+          path='/cart'
+          element={userData ? <CartPage /> : <Navigate to={'/signin'} />}
+        >
+        </Route>
+
+        <Route
+          path='/checkout'
+          element={userData ? <CheckOut /> : <Navigate to={'/signin'} />}
         >
         </Route>
       </Routes>

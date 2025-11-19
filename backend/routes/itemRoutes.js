@@ -8,6 +8,6 @@ itemRouter.post('/add-item', isAuth, upload.single("image"), addItem);
 itemRouter.post('/edit-item/:itemId', isAuth, upload.single('image'),  editItem);
 itemRouter.get('/get-by-id/:itemId', isAuth, getItemById);
 itemRouter.delete('/delete-item/:itemId', isAuth, deleteItem);
-itemRouter.get('/get-items-by-city/:city', getItemsByCity);
+itemRouter.get('/get-items-by-city/:city', isAuth, getItemsByCity);
 
 export default itemRouter;
