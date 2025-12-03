@@ -9,7 +9,6 @@ function CartPage() {
 
   return (
     <div className="min-h-screen bg-[#fff9f6] flex justify-center p-6 relative">
-      {/* ---- BACK BUTTON FIXED TOP-LEFT ---- */}
       <div
         className="absolute top-6 left-6 cursor-pointer z-20"
         onClick={() => navigate("/")}
@@ -18,8 +17,6 @@ function CartPage() {
       </div>
 
       <div className="w-full max-w-[800px] mt-14">
-        {/* Space added because absolute back button overlaps */}
-
         <h1 className="text-2xl font-bold mb-6 text-center">Your Cart</h1>
 
         {cartItems.length === 0 ? (

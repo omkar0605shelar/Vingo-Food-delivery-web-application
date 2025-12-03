@@ -29,3 +29,6 @@ This includes real-time tracking of delivery boy.
   Created Checkout page
   This are the commits till now. Many more to come.
 6.Created Checkout page
+7.Created place order api
+  created "My Orders" page for owner/user
+  created update status by owner

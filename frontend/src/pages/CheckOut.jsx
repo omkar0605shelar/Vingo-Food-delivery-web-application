@@ -12,6 +12,7 @@ import { setLocation, setMapAddress } from "../redux/mapSlice";
 import axios from "axios";
 import { useState, useEffect } from "react";
 import { serverUrl } from "../App";
+import { setAddMyOrder } from "../redux/userSlice";
 
 function RecenterMap({ location }) {
   const map = useMap();
@@ -118,6 +119,8 @@ function CheckOut() {
       );
 
       console.log(result?.data);
+      dispatch(setAddMyOrder(result?.data));
+      navigate("/order-placed");
     } catch (e) {
       console.log("Error occuring while handle placing order");
       console.log(e);

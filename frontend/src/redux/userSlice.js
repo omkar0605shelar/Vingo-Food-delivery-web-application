@@ -11,6 +11,7 @@ const userSlice = createSlice({
     itemsInMyCity: [],
     cartItems: [],
     totalAmount: 0,
+    myOrders: [],
   },
 
   reducers: {
@@ -62,7 +63,7 @@ const userSlice = createSlice({
       const item = state.cartItems.find((i) => i._id === id);
 
       if (item) {
-        item.quantity = Math.max(1, quantity); 
+        item.quantity = Math.max(1, quantity);
       }
 
       state.totalAmount = state.cartItems.reduce(
@@ -81,6 +82,21 @@ const userSlice = createSlice({
         0
       );
     },
+    setMyOrders: (state, action) => {
+      state.myOrders = action.payload;
+    },
+    setAddMyOrder: (state, action) => {
+      state.myOrders = [action.payload, ...state.myOrders];
+    },
+    setUpdateOrderStatus: (state, action) => {
+      const { orderId, shopId, status } = action.payload;
+      const order = state.myOrders.find((o) => o._id === orderId);
+      if (order) {
+        if (order.shopOrders && order.shopOrders.shop._id === shopId) {
+          order.shopOrders.status = status;
+        }
+      }
+    },
   },
 });
 
@@ -94,6 +110,9 @@ export const {
   setAddToCart,
   setUpdateQuantity,
   setRemoveCartItem,
+  setMyOrders,
+  setAddMyOrder,
+  setUpdateOrderStatus,
 } = userSlice.actions;
 
 export default userSlice.reducer;

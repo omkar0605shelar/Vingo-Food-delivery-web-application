@@ -11,7 +11,7 @@ import { serverUrl } from "../App";
 import { setUserData } from "../redux/userSlice";
 
 function Nav() {
-  const cartItems = useSelector(state => state.user?.cartItems || []);
+  const cartItems = useSelector((state) => state.user?.cartItems || []);
   const { userData, currentCity } = useSelector((state) => state.user);
   const { myShopData } = useSelector((state) => state.owner);
   const [showInfo, setShowInfo] = useState(false);
@@ -53,6 +53,23 @@ function Nav() {
                 className="px-[10px] text-gray-700 outline-0 w-full"
               />
             </div>
+
+            <CiSearch size={25} className="text-[#ff4d2d] md:hidden " />
+            <div
+              className="relative cursor-pointer mr-5"
+              onClick={() => navigate("/cart")}
+            >
+              <CiShoppingCart size={25} className="text-[#ff4d2d]" />
+              <span className="absolute right-[-5px] top-[-12px] text-[#ff4d2d] font-bold">
+                {cartItems.length}
+              </span>
+            </div>
+            <button
+              className="hidden md:block px-3 py-1 rounded-lg bg-[#ff4d2d]/10 text-[#ff4d2d] text-sm font-medium mr-5 cursor-pointer"
+              onClick={() => navigate("/my-orders")}
+            >
+              My Orders
+            </button>
           </div>
         </>
       )}
@@ -60,32 +77,25 @@ function Nav() {
       {/* Right Section */}
       <div className="flex items-center gap-4">
         {/* Owner UI */}
-        {userData?.role === "owner" ? (
+        {userData?.role === "owner" && (
           <>
             {myShopData && (
-              <button
-                className="flex items-center gap-1 p-2 cursor-pointer rounded-full bg-[#ff4d2d]/10 text-[#ff4d2d] text-sm"
-                onClick={() => navigate('/add-item')}
-              >
-                <FaPlus size={20} />
-                <span>Add Food Item</span>
-              </button>
+              <>
+                <button
+                  className="flex items-center gap-1 p-2 cursor-pointer rounded-full bg-[#ff4d2d]/10 text-[#ff4d2d] text-sm"
+                  onClick={() => navigate("/add-item")}
+                >
+                  <FaPlus size={20} />
+                  <span>Add Food Item</span>
+                </button>
+                <button
+                  className="hidden md:block px-3 py-1 rounded-lg bg-[#ff4d2d]/10 text-[#ff4d2d] text-sm font-medium mr-5 cursor-pointer"
+                  onClick={() => navigate("/my-orders")}
+                >
+                  My Orders
+                </button>
+              </>
             )}
-          </>
-        ) : (
-          // User UI
-          <>
-            <CiSearch size={25} className="text-[#ff4d2d] md:hidden " />
-            <div className="relative cursor-pointer mr-5" onClick={()=> navigate('/cart')}>
-              <CiShoppingCart size={25} className="text-[#ff4d2d]" />
-              <span className="absolute right-[-5px] top-[-12px] text-[#ff4d2d] font-bold">
-                {cartItems.length}
-              </span>
-            </div>
-
-            <button className="hidden md:block px-3 py-1 rounded-lg bg-[#ff4d2d]/10 text-[#ff4d2d] text-sm font-medium mr-5">
-              My Orders
-            </button>
           </>
         )}
 
