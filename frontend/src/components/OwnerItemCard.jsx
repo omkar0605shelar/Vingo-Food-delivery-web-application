@@ -6,12 +6,13 @@ import { ClipLoader } from "react-spinners";
 import { useState } from "react";
 import axios from "axios";
 import { serverUrl } from "../App";
+import { setMyShopData } from "../redux/ownerSlice";
 import { updateShopItems } from "../redux/ownerSlice";
 
 function OwnerItemCard({ data }) {
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
-  const navigate  = useNavigate();
+  const navigate = useNavigate();
 
   const handleDeleteItem = async () => {
     setLoading(true);
@@ -21,11 +22,10 @@ function OwnerItemCard({ data }) {
         { withCredentials: true }
       );
 
-      alert("Item deleted successfully");
+      alert(`${data.name} deleted successfully`);
 
       dispatch(setMyShopData(result.data.shop));
       dispatch(updateShopItems(result.data.items));
-
     } catch (error) {
       console.log("Error while delete item ");
       console.log(error);
@@ -60,11 +60,24 @@ function OwnerItemCard({ data }) {
         <div className="flex items-center justify-between">
           <div className="text-[#ff4d2d] font-bold">{data?.price}</div>
           <div className="flex items-center gap-2">
-            <div className="p-2 rounded-full hover:bg-[#ff4d2d]/10 text-[#ff4d2d] cursor-pointer" onClick={()=>{navigate(`/edit-item/${data?._id}`)}}>
+            <div
+              className="p-2 rounded-full hover:bg-[#ff4d2d]/10 text-[#ff4d2d] cursor-pointer"
+              onClick={() => {
+                navigate(`/edit-item/${data?._id}`);
+              }}
+            >
               <FaPen size={16} />
             </div>
-            <div className="p-2 rounded-full hover:bg-[#ff4d2d]/10 text-[#ff4d2d] cursor-pointer" disabled={loading} onClick={handleDeleteItem}>
-              {loading ? <ClipLoader size={20} color="white" /> : <FaTrashAlt size={16} />}
+            <div
+              className="p-2 rounded-full hover:bg-[#ff4d2d]/10 text-[#ff4d2d] cursor-pointer"
+              disabled={loading}
+              onClick={handleDeleteItem}
+            >
+              {loading ? (
+                <ClipLoader size={20} color="white" />
+              ) : (
+                <FaTrashAlt size={16} />
+              )}
             </div>
           </div>
         </div>

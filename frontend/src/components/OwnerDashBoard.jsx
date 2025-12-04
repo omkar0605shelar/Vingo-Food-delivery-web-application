@@ -4,11 +4,29 @@ import { useSelector } from "react-redux";
 import { FaUtensils } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { FaPen } from "react-icons/fa";
+import { MdDelete } from "react-icons/md";
 import OwnerItemCard from "./OwnerItemCard";
+import { serverUrl } from "../App";
+import axios from "axios";
 
 function OwnerDashBoard() {
   const { myShopData } = useSelector((state) => state.owner);
+  const shopId = myShopData?._id;
   const navigate = useNavigate();
+
+  const handleDeleteShop = async () => {
+    try {
+      const result = await axios.post(
+        `${serverUrl}/api/shop/delete-shop/${shopId}`,
+        {},
+        { withCredentials: true }
+      );
+
+      console.log(result.data);
+    } catch (e) {
+      console.log("error while deleting shop", e);
+    }
+  };
 
   console.log("Shop Data:", myShopData);
 
@@ -46,13 +64,12 @@ function OwnerDashBoard() {
           </h1>
 
           <div className="bg-white shadow-lg rounded-xl overflow-hidden border border-orange-100 hover:shadow-2xl transition-all duration-300 w-full max-w-3xl relative">
+            <div className="absolute top-4 right-14 bg-[#ff4d2d] text-white p-2 rounded-full shadow-md hover:bg-orange-600 transition-colors cursor-pointer">
+              <FaPen size={20} onClick={() => navigate("/create-edit-shop")} />
+            </div>
+
             <div className="absolute top-4 right-4 bg-[#ff4d2d] text-white p-2 rounded-full shadow-md hover:bg-orange-600 transition-colors cursor-pointer">
-              <FaPen
-                size={20}
-                onClick={() => {
-                  navigate("/create-edit-shop");
-                }}
-              />
+              <MdDelete size={20} onClick={handleDeleteShop} />
             </div>
             <img
               src={myShopData.image}

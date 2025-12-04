@@ -5,8 +5,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { FaUtensils } from "react-icons/fa";
 import { setMyShopData } from "../redux/ownerSlice";
 import { ClipLoader } from "react-spinners";
-import axios from 'axios';
-import { serverUrl } from '../App'
+import axios from "axios";
+import { serverUrl } from "../App";
 
 function CreateEditShop() {
   const dispatch = useDispatch();
@@ -15,7 +15,7 @@ function CreateEditShop() {
     (state) => state.user
   );
 
-  const[loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const { myShopData } = useSelector((state) => state.owner);
   const [name, setName] = useState(myShopData?.name || "");
   const [address, setAddress] = useState(myShopData?.address || currentAddress);
@@ -26,7 +26,7 @@ function CreateEditShop() {
 
   const handleImage = (e) => {
     const file = e.target.files[0];
-    if(!file){
+    if (!file) {
       alert("image is required");
     }
     setBackendImage(file);
@@ -36,34 +36,36 @@ function CreateEditShop() {
   const handleSubmit = async (e) => {
     setLoading(true);
     e.preventDefault();
-    if(!backendImage){
+    if (!backendImage) {
       alert("Image is required");
       setLoading(false);
     }
-    try{
+    try {
       const formData = new FormData();
       formData.append("name", name);
       formData.append("city", city);
       formData.append("state", state);
       formData.append("address", address);
-      if(backendImage){
+      if (backendImage) {
         formData.append("image", backendImage);
       }
 
-      const result = await axios.post(`${serverUrl}/api/shop/create-edit`, formData, {withCredentials:true});
-      alert("Shop created successfully");
+      const result = await axios.post(
+        `${serverUrl}/api/shop/create-edit`,
+        formData,
+        { withCredentials: true }
+      );
 
       dispatch(setMyShopData(result.data));
-      console.log("Data",result.data);
+      console.log("Data", result.data);
       setLoading(false);
-      navigate('/');
-    }
-    catch(error){
+      navigate("/");
+    } catch (error) {
       console.log("Error while creating shop");
       console.log(error);
       setLoading(false);
     }
-  }
+  };
 
   return (
     <div className="relative flex flex-col justify-center items-center p-6 bg-gradient-to-br from-orange-50 to-white min-h-screen">
@@ -119,7 +121,6 @@ function CreateEditShop() {
                 />
               </div>
             )}
-
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -163,8 +164,11 @@ function CreateEditShop() {
             />
           </div>
 
-          <button className="w-full bg-[#ff4d2d] px-6 py-3 rounded-lg font-semibold shadow-md hover:bg-orange-600 hover:shadow-lg transition-all duration-200 cursor-pointer" disabled={loading}>
-            {loading ? <ClipLoader size={20} color="white"/> : "Save"}
+          <button
+            className="w-full bg-[#ff4d2d] px-6 py-3 rounded-lg font-semibold shadow-md hover:bg-orange-600 hover:shadow-lg transition-all duration-200 cursor-pointer"
+            disabled={loading}
+          >
+            {loading ? <ClipLoader size={20} color="white" /> : "Save"}
           </button>
         </form>
       </div>

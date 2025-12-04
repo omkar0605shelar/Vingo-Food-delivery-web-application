@@ -33,14 +33,14 @@ function AddItem() {
     "Chinese",
     "Fast Food",
     "Others",
-  ]
+  ];
 
   const handleImage = (e) => {
     const file = e.target.files[0];
     if (file.size > 500000) alert("Use smaller image (<500KB)");
     setBackendImage(file);
     setFrontendImage(URL.createObjectURL(file));
-  }
+  };
 
   const handleSumbit = async (e) => {
     e.preventDefault();
@@ -66,7 +66,7 @@ function AddItem() {
       console.log(result.data);
       dispatch(setMyShopData(result.data.shop));
       setLoading(false);
-      alert("Item added successfully!");
+      alert(`${name} added successfully!`);
       navigate("/");
     } catch (error) {
       console.log("Error while adding item");
@@ -92,7 +92,7 @@ function AddItem() {
           <div className="text-3xl font-extrabold text-gray-900">Add Food</div>
         </div>
 
-        <form onSubmit={handleSumbit} >
+        <form onSubmit={handleSumbit}>
           {/* Food Name */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">

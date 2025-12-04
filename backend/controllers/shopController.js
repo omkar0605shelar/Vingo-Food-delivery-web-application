@@ -1,5 +1,6 @@
 import uploadOnCloudinary from "../utils/cloudinary.js";
 import Shop from "../models/shopModel.js";
+import Item from "../models/itemModel.js";
 
 export const createEditShop = async (req, res) => {
   try {
@@ -67,14 +68,37 @@ export const getShopByCity = async (req, res) => {
     console.log("CITY RECEIVED:", city);
 
     const shops = await Shop.find({
-      city: { $regex: city, $options: "i" } 
+      city: { $regex: city, $options: "i" },
     }).populate("items");
 
     console.log("SHOPS FOUND:", shops.length);
     return res.status(200).json(shops);
-
   } catch (error) {
     console.error("getShopByCity error:", error);
     return res.status(500).json({ message: "getShopByCity error", error });
+  }
+};
+
+export const deleteShop = async (req, res) => {
+  try {
+    const { shopId } = req.params;
+
+    if (!shopId) {
+      return res.status(400).json({ message: "Shop ID is required" });
+    }
+
+    const deletedShop = await Shop.findByIdAndDelete(shopId);
+
+    if (!deletedShop) {
+      return res.status(404).json({ message: "Shop not found" });
+    }
+
+    await Item.deleteMany({ shop: shopId });
+
+    return res.status(200).json({ message: "Shop deleted successfully" });
+  } catch (e) {
+    return res
+      .status(500)
+      .json({ message: `error while delete shop , ${e.message}` });
   }
 };

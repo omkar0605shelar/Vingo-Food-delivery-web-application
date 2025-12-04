@@ -5,15 +5,16 @@ import { useDispatch, useSelector } from "react-redux";
 import { FaUtensils } from "react-icons/fa";
 import axios from "axios";
 import { serverUrl } from "../App";
-import { addItemToShop } from "../redux/ownerSlice";
+import { updateSingleItem } from "../redux/ownerSlice";
 import { useEffect } from "react";
 import { ClipLoader } from "react-spinners";
+
 function EditItem() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [currentItem, setCurrentItem] = useState(null);
 
-  const {itemId} = useParams();
+  const { itemId } = useParams();
 
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
@@ -35,14 +36,14 @@ function EditItem() {
     "Chinese",
     "Fast Food",
     "Others",
-  ]
+  ];
 
   const handleImage = (e) => {
     const file = e.target.files[0];
     if (file.size > 500000) alert("Use smaller image (<500KB)");
     setBackendImage(file);
     setFrontendImage(URL.createObjectURL(file));
-  }
+  };
 
   const handleSumbit = async (e) => {
     e.preventDefault();
@@ -67,8 +68,8 @@ function EditItem() {
 
       console.log(result.data);
 
-      dispatch(addItemToShop(result.data.item)); 
-      alert("Item edited successfully!");
+      dispatch(updateSingleItem(result.data.item));
+      alert(`${result?.data?.item?.name} edited successfully!`);
       setLoading(false);
       navigate("/");
     } catch (error) {
@@ -78,19 +79,21 @@ function EditItem() {
     }
   };
 
-  useEffect(() =>{
+  useEffect(() => {
     const handleGetById = async () => {
-      try{
-        const result = await axios.get(`${serverUrl}/api/item/get-by-id/${itemId}`, {withCredentials:true})
+      try {
+        const result = await axios.get(
+          `${serverUrl}/api/item/get-by-id/${itemId}`,
+          { withCredentials: true }
+        );
 
         console.log(result.data);
         setCurrentItem(result.data);
-      }
-      catch(error){
+      } catch (error) {
         console.log("Error while get item by id");
         console.log(error);
       }
-    }
+    };
     handleGetById();
   }, [itemId]);
 
@@ -100,7 +103,7 @@ function EditItem() {
     setFrontendImage(currentItem?.image || "");
     setCategory(currentItem?.category || "");
     setFoodType(currentItem?.foodType || "veg");
-  }, [currentItem])
+  }, [currentItem]);
 
   return (
     <div className="relative flex flex-col justify-center items-center p-6 bg-gradient-to-br from-orange-50 to-white min-h-screen">
@@ -119,7 +122,7 @@ function EditItem() {
           <div className="text-3xl font-extrabold text-gray-900">Edit Food</div>
         </div>
 
-        <form onSubmit={handleSumbit} >
+        <form onSubmit={handleSumbit}>
           {/* Food Name */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -143,7 +146,7 @@ function EditItem() {
               type="number"
               placeholder="0"
               className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
-              onChange={(e) => setPrice(e.target.value)}
+              onChange={(e) => setPrice(Number(e.target.value))}
               value={price}
             />
           </div>
@@ -207,9 +210,13 @@ function EditItem() {
           <button
             type="submit"
             className="w-full bg-[#ff4d2d] px-6 py-3 rounded-lg font-semibold shadow-md hover:bg-orange-600 hover:shadow-lg transition-all duration-200 cursor-pointer"
-            disabled = {loading}
+            disabled={loading}
           >
-            {loading ? <ClipLoader size={20} color="white" /> : <span>Save</span>}
+            {loading ? (
+              <ClipLoader size={20} color="white" />
+            ) : (
+              <span>Save</span>
+            )}
           </button>
         </form>
       </div>

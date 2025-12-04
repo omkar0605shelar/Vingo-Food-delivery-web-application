@@ -1,4 +1,5 @@
-import React from "react";
+// components/OwnerOrderCard.jsx
+import React, { useState } from "react";
 import { FaPhoneAlt } from "react-icons/fa";
 import axios from "axios";
 import { serverUrl } from "../App";
@@ -6,7 +7,9 @@ import { useDispatch } from "react-redux";
 import { setUpdateOrderStatus } from "../redux/userSlice";
 
 function OwnerOrderCard({ data }) {
+  const [availableBoys, setAvailableBoys] = useState([]);
   const dispatch = useDispatch();
+
   const totalAmount =
     data?.shopOrders?.reduce((sum, shop) => sum + (shop.subtotal || 0), 0) || 0;
 
@@ -15,13 +18,32 @@ function OwnerOrderCard({ data }) {
       console.log("SHOP ID:", shopId);
       console.log("ORDER ID:", orderId);
 
-      const result = await axios.post(
+      const result = await axios.put(
         `${serverUrl}/api/order/update-status/${orderId}/${shopId}`,
         { status },
         { withCredentials: true }
       );
-      dispatch(setUpdateOrderStatus({ orderId, shopId, status }));
-      console.log(result.data);
+
+      console.log("update-status result:", result.data);
+
+      if (result?.data?.shopOrder) {
+        const returnedShopOrder = result.data.shopOrder;
+
+        dispatch(
+          setUpdateOrderStatus({
+            orderId,
+            shopId,
+            status: returnedShopOrder.status,
+            assignment: result.data.assignment ?? null,
+            assignedDeliveryBoy: result.data.assignedDeliveryBoy ?? null,
+          })
+        );
+
+        setAvailableBoys(result?.data?.availableBoys ?? []);
+      } else {
+        console.log("No shopOrder returned:", result?.data?.message);
+        setAvailableBoys(result?.data?.availableBoys ?? []);
+      }
     } catch (e) {
       console.log("error", e);
     }
@@ -36,7 +58,6 @@ function OwnerOrderCard({ data }) {
         <p className="text-sm text-gray-500">
           {data?.user?.email || "No email"}
         </p>
-
         <p className="flex items-center gap-2 text-sm mt-1 text-gray-600">
           <FaPhoneAlt />
           <span>{data?.user?.mobile || "No phone"}</span>
@@ -54,7 +75,7 @@ function OwnerOrderCard({ data }) {
       {data?.shopOrders?.map((shopOrder, idx) => (
         <div key={idx} className="border rounded-lg p-3 bg-[#fffaf7] space-y-3">
           <p className="font-semibold">
-            {shopOrder?.shop?.name || "Unknown Shop"}
+            {shopOrder?.shop?.name || data?.shopOrders?.[idx]?.shopName}
           </p>
 
           <div className="flex space-x-4 overflow-x-auto pb-2">
@@ -85,15 +106,15 @@ function OwnerOrderCard({ data }) {
             </div>
 
             <select
-              className="ml-auto rounded-md border px-3 py-1 text-sm 
-                         focus:outline-none focus:ring-2 border-[#ff4d2d] text-[#ff4d2d] cursor-pointer"
+              className="ml-auto rounded-md border px-3 py-1 text-sm focus:outline-none focus:ring-2 border-[#ff4d2d] text-[#ff4d2d] cursor-pointer"
               onChange={(e) =>
                 handleUpdateStatus(
                   data._id,
-                  shopOrder?.shop?._id,
+                  shopOrder?.shop?._id || shopOrder?.shop,
                   e.target.value
                 )
               }
+              value=""
             >
               <option value="">Change</option>
               <option value="pending">Pending</option>

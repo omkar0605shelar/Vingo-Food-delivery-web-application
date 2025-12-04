@@ -4,7 +4,8 @@ import uploadOnCloudinary from "../utils/cloudinary.js";
 
 export const addItem = async (req, res) => {
   try {
-    const { name, foodType, category, price } = req.body;
+    let { name, foodType, category, price } = req.body;
+    price = Number(price);
 
     if (!name || !category || !foodType || !price) {
       return res.status(400).json({ message: "All fields are required" });
@@ -51,34 +52,38 @@ export const addItem = async (req, res) => {
 export const editItem = async (req, res) => {
   try {
     const itemId = req.params.itemId;
-    const { name, foodType, category, price } = req.body;
+    let { name, foodType, category, price } = req.body;
+
+    price = Number(price);
+    if (isNaN(price)) {
+      return res.status(400).json({ message: "Invalid price" });
+    }
 
     let image;
     if (req.file) {
       image = await uploadOnCloudinary(req.file.path);
     }
 
-    const item = await Item.findByIdAndUpdate(
-      itemId,
-      {
-        name,
-        foodType,
-        category,
-        price,
-        image,
-      },
-      { new: true }
-    );
+    const updateData = {
+      name,
+      foodType,
+      category,
+      price,
+    };
+
+    if (image) {
+      updateData.image = image;
+    }
+
+    const item = await Item.findByIdAndUpdate(itemId, updateData, {
+      new: true,
+    });
 
     if (!item) {
       return res.status(400).json({ message: "Item not found" });
     }
-    const shop = await Shop.findOne({ owner: req.userId }).populate({
-      path: "items",
-      options: { sort: { updatedAt: -1 } },
-    });
 
-    return res.status(201).json(shop);
+    return res.status(200).json({ message: "Item updated", item });
   } catch (error) {
     return res.status(500).json({ message: `edit item error ${error}` });
   }
@@ -112,9 +117,7 @@ export const deleteItem = async (req, res) => {
     const shop = await Shop.findOne({ owner: req.userId });
 
     // FIXED FILTER
-    shop.items = shop.items.filter(
-      (i) => i.toString() !== item._id.toString()
-    );
+    shop.items = shop.items.filter((i) => i.toString() !== item._id.toString());
 
     await shop.save();
 
@@ -123,7 +126,7 @@ export const deleteItem = async (req, res) => {
       options: { sort: { updatedAt: -1 } },
     });
 
-    return res.status(200).json({shop, items : shop.items});
+    return res.status(200).json({ shop, items: shop.items });
   } catch (error) {
     return res.status(500).json({ message: "delete item error", error });
   }
@@ -135,16 +138,15 @@ export const getItemsByCity = async (req, res) => {
     console.log("CITY RECEIVED:", city);
 
     const shops = await Shop.find({
-      city: { $regex: city, $options: "i" }
+      city: { $regex: city, $options: "i" },
     }).populate("items");
 
     console.log("SHOPS FOUND:", shops.length);
 
-    const allItems = shops.flatMap(shop => shop.items || []);
+    const allItems = shops.flatMap((shop) => shop.items || []);
     console.log("ITEMS FOUND:", allItems.length);
 
     return res.status(200).json(allItems);
-
   } catch (error) {
     console.error("getItemsByCity error:", error);
     return res.status(500).json({ message: "getItemsByCity error", error });

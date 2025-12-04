@@ -21,7 +21,7 @@ function useGetCity() {
           );
 
           const info = response?.data?.results[0];
-          console.log("Full GPS Response:", info);
+          console.log("useGetCity", info);
 
           const city =
             info.city ||

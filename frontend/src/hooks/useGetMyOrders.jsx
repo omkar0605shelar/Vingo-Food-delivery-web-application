@@ -15,6 +15,8 @@ function useGetMyOrders() {
           withCredentials: true,
         });
 
+        console.log("useGetMyOrders", result?.data);
+
         dispatch(setMyOrders(result.data || []));
       } catch (error) {
         console.log("Order fetch error:", error);
