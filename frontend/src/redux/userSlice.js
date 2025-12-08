@@ -89,14 +89,20 @@ const userSlice = createSlice({
       state.myOrders = [action.payload, ...state.myOrders];
     },
     setUpdateOrderStatus: (state, action) => {
-      const { orderId, shopId, status } = action.payload;
+      const { orderId, shopId, status, availableBoys } = action.payload;
 
       const order = state.myOrders.find((o) => o._id === orderId);
       if (!order) return;
 
-      if (order?.shopOrders && order?.shopOrders?.shop?._id === shopId) {
-        order.shopOrders.status = status;
-      }
+      // Update the shopOrder status
+      const shopOrder = order.shopOrders.find((s) => s.shop._id === shopId);
+      if (shopOrder) shopOrder.status = status;
+
+      // Merge/update availableBoys for this order
+      order.availableBoys = {
+        ...(order.availableBoys || {}),
+        ...availableBoys, // availableBoys should already be { [shopId]: [...] }
+      };
     },
   },
 });

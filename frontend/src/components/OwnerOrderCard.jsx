@@ -6,8 +6,9 @@ import { useDispatch } from "react-redux";
 import { setUpdateOrderStatus } from "../redux/userSlice";
 
 function OwnerOrderCard({ data }) {
-  const [availableBoys, setAvailableBoys] = useState({});
   const dispatch = useDispatch();
+
+  const [availableBoys, setAvailableBoys] = useState(data.availableBoys || {});
 
   const totalAmount =
     data?.shopOrders?.reduce((sum, s) => sum + (s.subtotal || 0), 0) || 0;
@@ -20,22 +21,28 @@ function OwnerOrderCard({ data }) {
         { withCredentials: true }
       );
 
-      console.log("update-status result:", result.data);
-
-      dispatch(setUpdateOrderStatus({ orderId, shopId, status }));
+      const { shopOrder, availableBoys: apiBoys } = result.data;
 
       setAvailableBoys((prev) => ({
         ...prev,
-        [shopId]: result?.data?.availableBoys ?? [],
+        [shopId]: apiBoys,
       }));
+
+      dispatch(
+        setUpdateOrderStatus({
+          orderId,
+          shopId,
+          status: shopOrder.status,
+          availableBoys: { [shopId]: apiBoys },
+        })
+      );
     } catch (e) {
-      console.log("error", e);
+      console.log("Error updating status:", e);
     }
   };
 
   return (
     <div className="bg-white rounded-lg shadow p-4 space-y-4">
-      {/* USER */}
       <div>
         <h2 className="text-lg font-semibold text-gray-800">
           {data?.user?.fullName}
@@ -47,7 +54,6 @@ function OwnerOrderCard({ data }) {
         </p>
       </div>
 
-      {/* ADDRESS */}
       <div className="text-sm text-gray-600">
         <p>{data?.deliveryAddress?.text}</p>
         <p className="text-xs text-gray-500">
@@ -56,7 +62,6 @@ function OwnerOrderCard({ data }) {
         </p>
       </div>
 
-      {/* SHOP ORDERS */}
       {data?.shopOrders?.map((shopOrder) => (
         <div
           key={shopOrder._id}
@@ -64,7 +69,6 @@ function OwnerOrderCard({ data }) {
         >
           <p className="font-semibold">{shopOrder?.shop?.name}</p>
 
-          {/* ITEMS */}
           <div className="flex space-x-4 overflow-x-auto pb-2">
             {shopOrder?.shopOrderItems?.map((item) => (
               <div
@@ -74,6 +78,7 @@ function OwnerOrderCard({ data }) {
                 <img
                   src={item?.item?.image}
                   className="w-full h-24 object-cover rounded"
+                  alt={item?.item?.name}
                 />
                 <p className="text-sm font-semibold mt-1">{item?.item?.name}</p>
                 <p className="text-xs text-gray-500">
@@ -83,7 +88,6 @@ function OwnerOrderCard({ data }) {
             ))}
           </div>
 
-          {/* STATUS DROPDOWN */}
           <div className="flex items-center border-t pt-2">
             <p className="text-sm">
               <span className="font-semibold">Status: </span>
@@ -110,17 +114,25 @@ function OwnerOrderCard({ data }) {
             </select>
           </div>
 
-          {/* DELIVERY BOYS */}
           {shopOrder.status === "out for delivery" && (
             <div className="mt-3 p-2 border rounded bg-orange-50 text-sm">
-              <p className="font-semibold">Available delivery boys</p>
+              {shopOrder?.assignedDeliveryBoy ? (
+                <p className="font-semibold">Assigned Delivery Boys: </p>
+              ) : (
+                <p className="font-semibold">Available Delivery Boys: </p>
+              )}
 
-              {availableBoys[shopOrder?.shop?._id]?.length > 0 ? (
+              {(availableBoys?.[shopOrder?.shop?._id] ?? []).length > 0 ? (
                 availableBoys[shopOrder?.shop?._id].map((b) => (
                   <div key={b.id} className="text-gray-700">
                     {b.fullName} — {b.mobile}
                   </div>
                 ))
+              ) : shopOrder?.assignedDeliveryBoy ? (
+                <div>
+                  {shopOrder?.assignedDeliveryBoy?.fullName}-
+                  {shopOrder?.assignedDeliveryBoy?.mobile}
+                </div>
               ) : (
                 <div>Waiting for delivery boys to accept.</div>
               )}
