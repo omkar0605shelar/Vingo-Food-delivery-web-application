@@ -186,7 +186,7 @@ export const updateOrderStatus = async (req, res) => {
               type: "Point",
               coordinates: [longitude, latitude],
             },
-            $maxDistance: 10000,
+            $maxDistance: 5000,
           },
         },
       });
@@ -393,5 +393,29 @@ export const getCurrentOrder = async (req, res) => {
     });
   } catch (e) {
     return res.status(500).json({ message: `get current order error: ${e}` });
+  }
+};
+
+export const getOrderById = async (req, res) => {
+  try {
+    const { orderId } = req.params;
+
+    const order = await Order.findById(orderId)
+      .populate("user", "fullName email mobile")
+      .populate("shopOrders.shop", "name")
+      .populate(
+        "shopOrders.assignedDeliveryBoy",
+        "fullName mobile email location"
+      )
+      .populate("shopOrders.shopOrderItems.item", "name image price")
+      .lean();
+
+    if (!order) {
+      return res.status(400).json({ message: "Order not found." });
+    }
+
+    return res.status(200).json(order);
+  } catch (e) {
+    return res.status(500).json({ message: `get by id order error ${e}` });
   }
 };
