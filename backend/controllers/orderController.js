@@ -1,8 +1,8 @@
-// controllers/orderController.js
 import Shop from "../models/shopModel.js";
 import Order from "../models/orderModel.js";
 import User from "../models/userModel.js";
 import DeliveryAssignment from "../models/deliveryAssignmentModel.js";
+import { sendDeliveryOtpMail } from "../utils/mail.js";
 
 export const placeOrder = async (req, res) => {
   try {
@@ -86,7 +86,6 @@ export const getMyOrders = async (req, res) => {
       return res.status(200).json(orders);
     }
 
-    // OWNER — IMPORTANT: populate BEFORE filtering so fields remain available
     if (user.role === "owner") {
       const orders = await Order.find({ "shopOrders.owner": req.userId })
         .sort({ createdAt: -1 })
@@ -417,5 +416,85 @@ export const getOrderById = async (req, res) => {
     return res.status(200).json(order);
   } catch (e) {
     return res.status(500).json({ message: `get by id order error ${e}` });
+  }
+};
+
+export const sendDeliveryOtp = async (req, res) => {
+  try {
+    const { orderId, shopOrderId } = req.body;
+    const order = await Order.findById(orderId).populate("user");
+
+    const shopOrder = order.shopOrders.id(shopOrderId);
+
+    if (!order || !shopOrder) {
+      return res.status(400).json({ message: "Enter valid order/shopOrderId" });
+    }
+
+    const otp = Math.floor(1000 + Math.random() * 9000).toString();
+    shopOrder.deliveryOtp = otp;
+    shopOrder.otpExpires = Date.now() + 5 * 60 * 1000;
+
+    await order.save();
+    await sendDeliveryOtpMail(order.user, otp);
+
+    return res
+      .status(200)
+      .json({ message: `Otp send successfully ${order?.user?.fullName}` });
+  } catch (e) {
+    return res
+      .status(500)
+      .json({ message: `Error while sending delivery otp ${e}` });
+  }
+};
+
+export const verifiedDeliveryOtp = async (req, res) => {
+  try {
+    const { orderId, shopOrderId, otp } = req.body;
+
+    // FIND ORDER
+    const order = await Order.findById(orderId).populate("user");
+    const shopOrder = order.shopOrders.id(shopOrderId);
+
+    if (!order || !shopOrder) {
+      return res.status(400).json({ message: "Enter valid order/shopOrderId" });
+    }
+
+    // OTP VALIDATION
+    if (
+      shopOrder.deliveryOtp != otp ||
+      !shopOrder.otpExpires ||
+      shopOrder.otpExpires < Date.now()
+    ) {
+      return res.status(400).json({ message: "Invalid/expired OTP" });
+    }
+
+    // UPDATE SHOP ORDER STATUS
+    shopOrder.status = "delivered";
+    shopOrder.deliveredAt = Date.now();
+
+    // 🔥 REMOVE DELIVERY BOY ASSIGNMENT (IMPORTANT)
+    const deliveryBoyId = shopOrder.assignedDeliveryBoy;
+    shopOrder.assignedDeliveryBoy = null;
+
+    // DELETE DELIVERY ASSIGNMENT ENTRY
+    await DeliveryAssignment.deleteOne({
+      shopOrderId: shopOrder._id,
+      orderId: order._id,
+      assignedTo: deliveryBoyId,
+    });
+
+    // 🔥 ALSO REMOVE CURRENT ORDER FROM DELIVERY BOY DOCUMENT
+    await DeliveryBoy.updateOne(
+      { _id: deliveryBoyId },
+      { $set: { currentOrder: null } }
+    );
+
+    await order.save();
+
+    return res.status(200).json({ message: "Order delivered successfully." });
+  } catch (e) {
+    return res.status(500).json({
+      message: `error while verified delivery otp : ${e.message}`,
+    });
   }
 };

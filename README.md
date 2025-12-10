@@ -32,3 +32,12 @@ This includes real-time tracking of delivery boy.
 7.Created place order api
   created "My Orders" page for owner/user
   created update status by owner
+8.Created delivery assignment functionality
+9.Created delivery boy page
+10.Created "acceptOrder" and "getCurrentOrder" for delivery boy
+11.Created live tracking map
+12.Created track order page for user
+13.Created controller for sending delivery otp to user
+   Filtered food items by category
+   Created shop in user dashboard
+   Added search functionality

@@ -12,6 +12,7 @@ const userSlice = createSlice({
     cartItems: [],
     totalAmount: 0,
     myOrders: [],
+    searchItems: null,
   },
 
   reducers: {
@@ -104,6 +105,9 @@ const userSlice = createSlice({
         ...availableBoys, // availableBoys should already be { [shopId]: [...] }
       };
     },
+    setSearchItems: (state, action) => {
+      state.searchItems = action.payload;
+    },
   },
 });
 
@@ -120,6 +124,7 @@ export const {
   setMyOrders,
   setAddMyOrder,
   setUpdateOrderStatus,
+  setSearchItems,
 } = userSlice.actions;
 
 export default userSlice.reducer;
