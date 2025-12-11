@@ -21,11 +21,18 @@ app.use(express.json());
 app.use(cookieParser());
 
 // Trim each origin to avoid "Not allowed by CORS" due to spaces
-const allowedOrigins = process.env.CORS_ORIGIN.split(",").map((o) => o.trim());
+const allowedOrigins = ["https://vingo-frontend-4k67.onrender.com"];
 
 app.use(
   cors({
-    origin: "https://vingo-frontend-4k67.onrender.com",
+    origin: function (origin, callback) {
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      return callback(new Error("Not allowed by CORS: " + origin));
+    },
     credentials: true,
   })
 );
