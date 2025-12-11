@@ -18,7 +18,6 @@ function OwnerDashBoard() {
     try {
       const result = await axios.post(
         `${serverUrl}/api/shop/delete-shop/${shopId}`,
-        {},
         { withCredentials: true }
       );
 

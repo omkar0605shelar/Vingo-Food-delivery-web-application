@@ -40,6 +40,7 @@ export const signUp = async (req, res) => {
       secure: true, // required for HTTPS
       sameSite: "none", // required for cross-domain cookies
       maxAge: 7 * 24 * 60 * 60 * 1000,
+      path: "/",
     });
 
     const { password: _, ...userData } = user._doc;
@@ -70,6 +71,7 @@ export const signIn = async (req, res) => {
       secure: true, // required for HTTPS
       sameSite: "none", // required for cross-domain cookies
       maxAge: 7 * 24 * 60 * 60 * 1000,
+      path: "/",
     });
 
     const { password: _, ...userData } = user._doc;
@@ -86,6 +88,7 @@ export const signOut = async (req, res) => {
       httpOnly: true,
       secure: true,
       sameSite: "none",
+      path: "/",
     });
     return res.status(200).json({ message: "Logout successfully" });
   } catch (error) {
@@ -182,6 +185,7 @@ export const googleAuth = async (req, res) => {
       secure: true, // required for HTTPS
       sameSite: "none", // required for cross-domain cookies
       maxAge: 7 * 24 * 60 * 60 * 1000,
+      path: "/",
     });
 
     const { password, ...userData } = user._doc;

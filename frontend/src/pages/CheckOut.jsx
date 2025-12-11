@@ -40,13 +40,14 @@ function CheckOut() {
   const onDragEnd = (e) => {
     const { lat, lng } = e.target._latlng;
     dispatch(setLocation({ lat, lon: lng }));
-    getAddressByLatLng(lat, lng);
+    getAddressByLatLng(lat, lon);
   };
 
   const getAddressByLatLng = async (lat, lon) => {
     try {
       const res = await axios.get(
-        `https://api.geoapify.com/v1/geocode/reverse?lat=${lat}&lon=${lon}&format=json&apiKey=${apiKey}`
+        `https://api.geoapify.com/v1/geocode/reverse?lat=${lat}&lon=${lon}&format=json&apiKey=${apiKey}`,
+        { withCredentials: false }
       );
 
       const info = res?.data?.results?.[0];
@@ -76,7 +77,8 @@ function CheckOut() {
       const res = await axios.get(
         `https://api.geoapify.com/v1/geocode/search?text=${encodeURIComponent(
           addressInput
-        )}&apiKey=${apiKey}`
+        )}&apiKey=${apiKey}`,
+        { withCredentials: false }
       );
 
       const info = res?.data?.features?.[0]?.properties;
