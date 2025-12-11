@@ -20,13 +20,13 @@ app.set("trust proxy", 1);
 app.use(express.json());
 app.use(cookieParser());
 
-const allowedOrigins = process.env.CORS_ORIGIN.split(",");
+// Trim each origin to avoid "Not allowed by CORS" due to spaces
+const allowedOrigins = process.env.CORS_ORIGIN.split(",").map((o) => o.trim());
 
 app.use(
   cors({
     origin: function (origin, callback) {
       if (!origin) return callback(null, true);
-
       if (allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
