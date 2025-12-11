@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { FaLocationDot } from "react-icons/fa6";
 import { FaPlus } from "react-icons/fa";
 import { CiSearch } from "react-icons/ci";
@@ -32,7 +32,7 @@ function Nav() {
     }
   };
 
-  const handleSearchItems = async () => {
+  const handleSearchItems = useCallback(async () => {
     try {
       const result = await axios.get(
         `${serverUrl}/api/item/search-items?query=${query}&city=${currentCity}`,
@@ -44,7 +44,7 @@ function Nav() {
       console.log("Error while handle search items: ");
       console.log(e);
     }
-  };
+  }, [query, currentCity, dispatch]);
 
   useEffect(() => {
     if (query) {
@@ -52,7 +52,7 @@ function Nav() {
     } else {
       dispatch(setSearchItems(null));
     }
-  }, [query]);
+  }, [query, handleSearchItems, dispatch]);
 
   return (
     <div className="w-full h-[80px] flex items-center justify-between md:justify-center gap-[30px] px-[20px] fixed top-0 z-[9999] bg-[#fff9f6] overflow-visible shadow-md">

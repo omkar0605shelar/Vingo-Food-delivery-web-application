@@ -23,13 +23,11 @@ app.use(cookieParser());
 
 app.use(
   cors({
-    origin: "https://vingo-frontend-4k67.onrender.com",
+    origin: process.env.FRONTEND_URL || "https://vingo-frontend-4k67.onrender.com",
     credentials: true,
   })
 );
 
-console.log("EMAIL:", process.env.EMAIL);
-console.log("PASS:", process.env.PASS);
 
 app.get("/", (req, res) => {
   res.send("Backend is running...");

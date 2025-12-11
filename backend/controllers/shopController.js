@@ -22,13 +22,13 @@ export const createEditShop = async (req, res) => {
         image,
         owner: req.userId,
       });
-    } else {
-      shop = await Shop.findByIdAndUpdate(
-        shop._id,
-        { name, city, state, address, image },
-        { new: true }
-      );
-    }
+  } else {
+      const updateData = { name, city, state, address };
+      if (image) {
+        updateData.image = image;
+      }
+      shop = await Shop.findByIdAndUpdate(shop._id, updateData, { new: true });
+  }
 
     shop = await Shop.findById(shop._id).populate("owner").populate("items");
 

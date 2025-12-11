@@ -1,11 +1,10 @@
 import { IoMdArrowBack } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { FaUtensils } from "react-icons/fa";
 import axios from "axios";
 import { setMyShopData } from "../redux/ownerSlice";
 import { serverUrl } from "../App";
-import { updateShopItems } from "../redux/ownerSlice";
 import { useState } from "react";
 import { ClipLoader } from "react-spinners";
 

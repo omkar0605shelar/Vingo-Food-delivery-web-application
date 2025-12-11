@@ -65,7 +65,7 @@ function useGetCity() {
         maximumAge: 0,
       }
     );
-  }, [userData]);
+  }, [userData, dispatch]);
 
   return null;
 }

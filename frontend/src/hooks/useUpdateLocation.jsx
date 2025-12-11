@@ -1,14 +1,13 @@
 import { useEffect } from "react";
 import axios from "axios";
-import { useDispatch, useSelector } from "react-redux";
-import { setAddress, setCity, setState } from "../redux/userSlice.js";
-import { setMapAddress, setLocation } from "../redux/mapSlice.js";
+import { useSelector } from "react-redux";
 import { serverUrl } from "../App.jsx";
 
 function useUpdateLocation() {
   const { userData } = useSelector((state) => state.user);
 
   useEffect(() => {
+    if (!userData) return;
     const updateLocation = async (lat, lon) => {
       const result = await axios.post(
         `${serverUrl}/api/user/update-location`,
@@ -19,9 +18,19 @@ function useUpdateLocation() {
       console.log("useUpdateLocation", result?.data);
     };
 
-    navigator.geolocation.watchPosition((pos) => {
-      updateLocation(pos.coords.latitude, pos.coords.longitude);
-    });
+    const watchId = navigator.geolocation.watchPosition(
+      (pos) => {
+        updateLocation(pos.coords.latitude, pos.coords.longitude);
+      },
+      () => {},
+      { enableHighAccuracy: true, maximumAge: 5000 }
+    );
+
+    return () => {
+      if (watchId && navigator.geolocation.clearWatch) {
+        navigator.geolocation.clearWatch(watchId);
+      }
+    };
   }, [userData]);
 
   return null;

@@ -8,6 +8,7 @@ function useGetItemsByCity() {
   const { currentCity } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   useEffect(() => {
+    if (!currentCity) return;
     const fetchItems = async () => {
       try {
         const result = await axios.get(
@@ -21,7 +22,7 @@ function useGetItemsByCity() {
       }
     };
     fetchItems();
-  }, [currentCity]);
+  }, [currentCity, dispatch]);
 }
 
 export default useGetItemsByCity;

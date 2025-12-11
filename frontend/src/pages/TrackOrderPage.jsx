@@ -10,22 +10,21 @@ function TrackOrderPage() {
   const { orderId } = useParams();
   const [currentOrder, setCurrentOrder] = useState();
 
-  const handleGetOrder = async () => {
-    try {
-      const result = await axios.get(
-        `${serverUrl}/api/order/get-order-by-id/${orderId}`,
-        { withCredentials: true }
-      );
-
-      console.log("ORDER =>", result.data);
-      setCurrentOrder(result.data);
-    } catch (e) {
-      console.log("Error in TrackOrderPage:", e);
-    }
-  };
-
   useEffect(() => {
-    handleGetOrder();
+    const fetchOrder = async () => {
+      try {
+        const result = await axios.get(
+          `${serverUrl}/api/order/get-order-by-id/${orderId}`,
+          { withCredentials: true }
+        );
+
+        console.log("ORDER =>", result.data);
+        setCurrentOrder(result.data);
+      } catch (e) {
+        console.log("Error in TrackOrderPage:", e);
+      }
+    };
+    fetchOrder();
   }, [orderId]);
 
   return (

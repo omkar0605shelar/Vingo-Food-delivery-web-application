@@ -92,7 +92,7 @@ export const signOut = async (req, res) => {
     });
     return res.status(200).json({ message: "Logout successfully" });
   } catch (error) {
-    return res.json(500).json(`sign out error ${error.message}`);
+    return res.status(500).json(`sign out error ${error.message}`);
   }
 };
 

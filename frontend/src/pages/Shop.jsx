@@ -13,23 +13,22 @@ function Shop() {
   const { shopId } = useParams();
   const [items, setItems] = useState([]);
   const [shop, setShop] = useState();
-  const handleShop = async () => {
-    try {
-      const result = await axios.get(
-        `${serverUrl}/api/item/get-items-by-shop/${shopId}`,
-        { withCredentials: true }
-      );
-      setShop(result.data.shop);
-      setItems(result.data.items);
-      console.log(result.data);
-    } catch (e) {
-      console.log("Error while get items by shop");
-      console.log(e);
-    }
-  };
-
   useEffect(() => {
-    handleShop();
+    const fetchShopItems = async () => {
+      try {
+        const result = await axios.get(
+          `${serverUrl}/api/item/get-items-by-shop/${shopId}`,
+          { withCredentials: true }
+        );
+        setShop(result.data.shop);
+        setItems(result.data.items);
+        console.log(result.data);
+      } catch (e) {
+        console.log("Error while get items by shop");
+        console.log(e);
+      }
+    };
+    fetchShopItems();
   }, [shopId]);
   return (
     <div className="min-h-screen bg-gray-50">
@@ -45,7 +44,6 @@ function Shop() {
           <img
             src={shop.image}
             alt={shop.name}
-            srcset=""
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-black/70 to-black/30 flex flex-col justify-center items-center text-center px-4">

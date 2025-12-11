@@ -29,16 +29,12 @@ function App() {
   useGetCurrentUser();
 
   const { userData } = useSelector((state) => state.user);
-
-  // Run only after login, prevents spam 400 errors
-  if (userData) {
-    useGetCity();
-    useGetMyShop();
-    useGetShopByCity();
-    useGetItemsByCity();
-    useGetMyOrders();
-    useUpdateLocation();
-  }
+  useGetCity();
+  useGetMyShop();
+  useGetShopByCity();
+  useGetItemsByCity();
+  useGetMyOrders();
+  useUpdateLocation();
 
   return (
     <>

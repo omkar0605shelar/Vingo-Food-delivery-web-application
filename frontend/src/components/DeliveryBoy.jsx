@@ -69,7 +69,7 @@ function DeliveryBoy() {
     }
   };
 
-  const getCurrentOrder = async (req, res) => {
+  const getCurrentOrder = async () => {
     try {
       const result = await axios.get(
         `${serverUrl}/api/order/get-current-order`,
@@ -150,7 +150,7 @@ function DeliveryBoy() {
         )}
 
         {currentOrder && (
-          <div className="bg-white rounded-2xl p-5 shadow-md p-5 w-[90%] border border-orange-100">
+          <div className="bg-white rounded-2xl shadow-md p-5 w-[90%] border border-orange-100">
             <h2 className="text-lg font-bold mb-3">Current Order: </h2>
             <div className="border rounded-lg p-4 mb-3">
               <p className="font-semibold text-sm">

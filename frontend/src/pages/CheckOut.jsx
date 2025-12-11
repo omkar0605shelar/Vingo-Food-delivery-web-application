@@ -40,7 +40,7 @@ function CheckOut() {
   const onDragEnd = (e) => {
     const { lat, lng } = e.target._latlng;
     dispatch(setLocation({ lat, lon: lng }));
-    getAddressByLatLng(lat, lon);
+    getAddressByLatLng(lat, lng);
   };
 
   const getAddressByLatLng = async (lat, lon) => {
@@ -69,7 +69,7 @@ function CheckOut() {
     const latitude = userData.location.coordinates[1];
     const longitude = userData.location.coordinates[0];
     dispatch(setLocation({ lat: latitude, lon: longitude }));
-    getAddressByLatLng(lat, lon);
+    getAddressByLatLng(latitude, longitude);
   };
 
   const getLatLngByAddress = async () => {

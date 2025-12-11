@@ -15,16 +15,12 @@ function UserDashBoard() {
 
   const cateScrollRef = useRef();
   const shopScrollRef = useRef();
-  const itemsScrollRef = useRef();
 
   const [showLeftCateButton, setShowLeftCateButton] = useState(false);
   const [showRightCateButton, setShowRightCateButton] = useState(false);
 
   const [showLeftShopButton, setShowLeftShopButton] = useState(false);
   const [showRightShopButton, setShowRightShopButton] = useState(false);
-
-  const [showLeftItemsButton, setShowLeftItemsButton] = useState(false);
-  const [showRightItemsButton, setShowRightItemsButton] = useState(false);
 
   const [updatedItemsList, setUpdatedItemsList] = useState([]);
 
@@ -56,9 +52,8 @@ function UserDashBoard() {
   useEffect(() => {
     const cateEl = cateScrollRef.current;
     const shopEl = shopScrollRef.current;
-    const itemsEl = itemsScrollRef.current;
 
-    if (!cateEl || !shopEl || !itemsEl) return;
+    if (!cateEl || !shopEl) return;
 
     const handleCateScroll = () =>
       updateButton(
@@ -74,25 +69,15 @@ function UserDashBoard() {
         setShowRightShopButton
       );
 
-    const handleItemsScroll = () =>
-      updateButton(
-        itemsScrollRef,
-        setShowLeftItemsButton,
-        setShowRightItemsButton
-      );
-
     handleCateScroll();
     handleShopScroll();
-    handleItemsScroll();
 
     cateEl.addEventListener("scroll", handleCateScroll);
     shopEl.addEventListener("scroll", handleShopScroll);
-    itemsEl.addEventListener("scroll", handleItemsScroll);
 
     return () => {
       cateEl.removeEventListener("scroll", handleCateScroll);
       shopEl.removeEventListener("scroll", handleShopScroll);
-      itemsEl.removeEventListener("scroll", handleItemsScroll);
     };
   }, []);
 

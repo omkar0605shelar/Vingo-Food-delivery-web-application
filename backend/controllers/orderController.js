@@ -282,7 +282,7 @@ export const getDeliveryBoyAsssignment = async (req, res) => {
     return res.status(200).json(formated);
   } catch (e) {
     return res
-      .json(500)
+      .status(500)
       .json({ message: `get assignment error, ${e.message}` });
   }
 };
@@ -363,7 +363,7 @@ export const getCurrentOrder = async (req, res) => {
     }
 
     const shopOrder = assignment.order.shopOrders.find(
-      (so) => toString(so._id) == toString(assignment.shopOrderId)
+      (so) => so._id.toString() === assignment.shopOrderId.toString()
     );
 
     if (!shopOrder) {
@@ -476,18 +476,11 @@ export const verifiedDeliveryOtp = async (req, res) => {
     const deliveryBoyId = shopOrder.assignedDeliveryBoy;
     shopOrder.assignedDeliveryBoy = null;
 
-    // DELETE DELIVERY ASSIGNMENT ENTRY
     await DeliveryAssignment.deleteOne({
       shopOrderId: shopOrder._id,
-      orderId: order._id,
+      order: order._id,
       assignedTo: deliveryBoyId,
     });
-
-    // 🔥 ALSO REMOVE CURRENT ORDER FROM DELIVERY BOY DOCUMENT
-    await DeliveryBoy.updateOne(
-      { _id: deliveryBoyId },
-      { $set: { currentOrder: null } }
-    );
 
     await order.save();
 
