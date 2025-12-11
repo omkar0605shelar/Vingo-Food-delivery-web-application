@@ -15,7 +15,6 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 8000;
 
-// Required when using secure cookies behind Render proxy
 app.set("trust proxy", 1);
 
 app.use(express.json());
@@ -26,7 +25,6 @@ const allowedOrigins = process.env.CORS_ORIGIN.split(",");
 app.use(
   cors({
     origin: function (origin, callback) {
-      // Allow requests with no origin (mobile apps, Postman)
       if (!origin) return callback(null, true);
 
       if (allowedOrigins.includes(origin)) {
@@ -36,7 +34,7 @@ app.use(
       }
     },
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
-    credentials: true, // 🟢 VERY IMPORTANT for cookies
+    credentials: true,
   })
 );
 
