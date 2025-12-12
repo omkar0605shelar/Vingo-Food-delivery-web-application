@@ -77,8 +77,22 @@ const orderSchema = new mongoose.Schema(
       latitude: { type: Number, required: true },
       longitude: { type: Number, required: true },
     },
-    totalAmount: Number,
+    totalAmount: {
+      type: Number,
+    },
     shopOrders: [shopOrderSchema],
+    payment: {
+      type: Boolean,
+      default: false,
+    },
+    razorPayOrderId: {
+      type: String,
+      default: "",
+    },
+    razorpayPaymentId: {
+      type: String,
+      default: "",
+    },
   },
   {
     timestamps: true,
