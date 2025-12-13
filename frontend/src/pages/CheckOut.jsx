@@ -136,7 +136,7 @@ function CheckOut() {
 
   const openRazorpayWindow = (orderId, razorOrder) => {
     const options = {
-      key: import.meta.env.VITE_RAZORAZORPAY_KEY_ID,
+      key: import.meta.env.VITE_RAZORPAY_KEY_ID,
       amount: razorOrder.amount,
       currency: "INR",
       name: "Vingo",
