@@ -36,7 +36,6 @@ function App() {
   useGetMyShop();
 
   const { userData } = useSelector((state) => state.user);
-  useGetCity();
 
   return (
     <>

@@ -16,7 +16,11 @@ function useGetCurrentUser() {
         dispatch(setUserData(result.data));
         console.log("useGetCurrentUser", result.data);
       } catch (error) {
-        console.log("Error", error);
+        if (error.response?.status === 401) {
+          dispatch(setUserData(null));
+        } else {
+          console.error("Unexpected error", error);
+        }
       }
     };
     fetchUser();
