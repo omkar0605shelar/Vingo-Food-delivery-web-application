@@ -29,12 +29,17 @@ function App() {
 
   const { userData } = useSelector((state) => state.user);
   useGetCity();
-  useGetMyShop();
-  useGetShopByCity();
-  useGetItemsByCity();
-  useGetMyOrders();
-  useUpdateLocation();
-  console.log("New commit ");
+
+  if (userData?.role === "user") {
+    useGetShopByCity();
+    useGetItemsByCity();
+    useGetMyOrders();
+    useUpdateLocation();
+  }
+
+  if (userData?.role === "owner") {
+    useGetMyShop();
+  }
 
   return (
     <>
