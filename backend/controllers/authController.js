@@ -3,6 +3,16 @@ import bcrypt from "bcryptjs";
 import genToken from "../utils/token.js";
 import { sendOtpMail } from "../utils/mail.js";
 
+/* ================= COOKIE OPTIONS ================= */
+const cookieOptions = {
+  httpOnly: true,
+  secure: true, // REQUIRED on Render (HTTPS)
+  sameSite: "none", // REQUIRED for cross-site cookies
+  domain: ".onrender.com", // ⭐ FIX: SHARE COOKIE ACROSS SUBDOMAINS
+  path: "/",
+  expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+};
+
 /* ================= SIGN UP ================= */
 export const signUp = async (req, res) => {
   try {
@@ -13,13 +23,13 @@ export const signUp = async (req, res) => {
       return res.status(400).json({ message: "User already exists" });
     }
 
-    if (password.length < 6) {
+    if (!password || password.length < 6) {
       return res
         .status(400)
         .json({ message: "Password must be at least 6 characters" });
     }
 
-    if (mobile.length < 10) {
+    if (!mobile || mobile.length < 10) {
       return res
         .status(400)
         .json({ message: "Mobile number must be at least 10 digits" });
@@ -36,15 +46,8 @@ export const signUp = async (req, res) => {
     });
 
     const token = await genToken(user._id);
-    const isProd = process.env.NODE_ENV === "production";
 
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: isProd,
-      sameSite: isProd ? "none" : "lax",
-      path: "/",
-      expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-    });
+    res.cookie("token", token, cookieOptions);
 
     const { password: _, ...userData } = user._doc;
     return res.status(201).json(userData);
@@ -70,15 +73,8 @@ export const signIn = async (req, res) => {
     }
 
     const token = await genToken(user._id);
-    const isProd = process.env.NODE_ENV === "production";
 
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: isProd,
-      sameSite: isProd ? "none" : "lax",
-      path: "/",
-      expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-    });
+    res.cookie("token", token, cookieOptions);
 
     const { password: _, ...userData } = user._doc;
     return res.status(200).json(userData);
@@ -91,13 +87,9 @@ export const signIn = async (req, res) => {
 /* ================= SIGN OUT ================= */
 export const signOut = async (req, res) => {
   try {
-    const isProd = process.env.NODE_ENV === "production";
-
     res.clearCookie("token", {
-      httpOnly: true,
-      secure: isProd,
-      sameSite: isProd ? "none" : "lax",
-      path: "/",
+      ...cookieOptions,
+      expires: new Date(0),
     });
 
     return res.status(200).json({ message: "Logout successfully" });
@@ -192,15 +184,8 @@ export const googleAuth = async (req, res) => {
     }
 
     const token = await genToken(user._id);
-    const isProd = process.env.NODE_ENV === "production";
 
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: isProd,
-      sameSite: isProd ? "none" : "lax",
-      path: "/",
-      expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-    });
+    res.cookie("token", token, cookieOptions);
 
     const { password, ...userData } = user._doc;
     return res.status(200).json({
