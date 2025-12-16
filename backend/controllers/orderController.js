@@ -16,6 +16,8 @@ let instance = new Razorpay({
 
 export const placeOrder = async (req, res) => {
   try {
+    console.log("USER ID:", req.userId);
+
     const { cartItems, deliveryAddress, paymentMethod, totalAmount } = req.body;
     if (!cartItems || cartItems.length === 0) {
       return res.status(400).json({ message: "Cart is empty" });
