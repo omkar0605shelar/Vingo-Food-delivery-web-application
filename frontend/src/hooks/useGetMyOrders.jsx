@@ -4,12 +4,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { setMyOrders } from "../redux/userSlice";
 import { serverUrl } from "../App";
 
-const useGetMyOrders = () => {
+const useGetMyOrders = (userData) => {
   const dispatch = useDispatch();
-  const { userData } = useSelector((state) => state.user);
 
   useEffect(() => {
-    // 🔒 Do not call API if user is not logged in
     if (!userData) return;
 
     const fetchMyOrders = async () => {

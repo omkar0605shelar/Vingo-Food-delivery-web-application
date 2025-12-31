@@ -3,9 +3,7 @@ import axios from "axios";
 import { useSelector } from "react-redux";
 import { serverUrl } from "../App.jsx";
 
-function useUpdateLocation() {
-  const { userData } = useSelector((state) => state.user);
-
+function useUpdateLocation(userData) {
   useEffect(() => {
     if (!userData) return;
     const updateLocation = async (lat, lon) => {

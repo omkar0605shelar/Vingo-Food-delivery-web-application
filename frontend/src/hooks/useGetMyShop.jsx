@@ -4,9 +4,8 @@ import { serverUrl } from "../App";
 import { useDispatch, useSelector } from "react-redux";
 import { setMyShopData } from "../redux/ownerSlice";
 
-function useGetMyShop() {
+function useGetMyShop(userData) {
   const dispatch = useDispatch();
-  const { userData } = useSelector((state) => state.user);
 
   useEffect(() => {
     if (!userData || userData.role !== "owner") return;

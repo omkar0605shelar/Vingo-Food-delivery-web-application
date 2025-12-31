@@ -5,7 +5,7 @@ import { serverUrl } from "../App";
 import { useDispatch } from "react-redux";
 import { setUserData } from "../redux/userSlice";
 
-function useGetCurrentUser() {
+function useGetCurrentUser(userData) {
   const dispatch = useDispatch();
   useEffect(() => {
     if (!userData) return;
