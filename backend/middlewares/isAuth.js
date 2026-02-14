@@ -1,28 +1,19 @@
-import jwt from "jsonwebtoken";
-
-const isAuth = (req, res, next) => {
-  try {
-    const token = req.cookies.token;
-
-    // No token
-    if (!token) {
-      return res.status(401).json({ message: "Unauthorized: Token missing" });
+import jwt from "jsonwebtoken"
+const isAuth=async (req,res,next) => {
+    try {
+        const token=req.cookies.token
+        if(!token){
+            return res.status(400).json({message:"token not found"})
+        }
+        const decodeToken=jwt.verify(token,process.env.JWT_SECRET)
+        if(!decodeToken){
+ return res.status(400).json({message:"token not verify"})
+        }
+        req.userId=decodeToken.userId
+        next()
+    } catch (error) {
+         return res.status(500).json({message:"isAuth error"})
     }
+}
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-    // Token invalid
-    if (!decoded?.id) {
-      return res.status(401).json({ message: "Unauthorized: Invalid token" });
-    }
-
-    req.userId = decoded.id;
-    next();
-  } catch (error) {
-    return res.status(401).json({
-      message: "Unauthorized: Token expired or invalid",
-    });
-  }
-};
-
-export default isAuth;
+export default isAuth

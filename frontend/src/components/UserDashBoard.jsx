@@ -1,209 +1,157 @@
-import Nav from "./Nav";
-import categories from "../category.js";
-import { useRef, useState, useEffect } from "react";
-import CategoryCard from "./CategoryCard";
-import { FaChevronCircleLeft, FaChevronCircleRight } from "react-icons/fa";
-import { useSelector } from "react-redux";
-import FoodCard from "./FoodCard.jsx";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useRef, useState } from 'react'
+import Nav from './NaV.JSX'
+import { categories } from '../category'
+import CategoryCard from './CategoryCard'
+import { FaCircleChevronLeft } from "react-icons/fa6";
+import { FaCircleChevronRight } from "react-icons/fa6";
+import { useSelector } from 'react-redux';
+import FoodCard from './FoodCard';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { serverUrl } from '../App';
 
-function UserDashBoard() {
-  const navigate = useNavigate();
-  const { currentCity, shopInMyCity, itemsInMyCity, searchItems } = useSelector(
-    (state) => state.user
-  );
+function UserDashboard() {
+  const {currentCity,shopInMyCity,itemsInMyCity,searchItems}=useSelector(state=>state.user)
+  const cateScrollRef=useRef()
+  const shopScrollRef=useRef()
+  const navigate=useNavigate()
+  const [showLeftCateButton,setShowLeftCateButton]=useState(false)
+  const [showRightCateButton,setShowRightCateButton]=useState(false)
+   const [showLeftShopButton,setShowLeftShopButton]=useState(false)
+  const [showRightShopButton,setShowRightShopButton]=useState(false)
+  const [updatedItemsList,setUpdatedItemsList]=useState([])
 
-  const cateScrollRef = useRef();
-  const shopScrollRef = useRef();
+const handleFilterByCategory=(category)=>{
+if(category=="All"){
+  setUpdatedItemsList(itemsInMyCity)
+}else{
+  const filteredList=itemsInMyCity?.filter(i=>i.category===category)
+  setUpdatedItemsList(filteredList)
+}
 
-  const [showLeftCateButton, setShowLeftCateButton] = useState(false);
-  const [showRightCateButton, setShowRightCateButton] = useState(false);
+}
 
-  const [showLeftShopButton, setShowLeftShopButton] = useState(false);
-  const [showRightShopButton, setShowRightShopButton] = useState(false);
+useEffect(()=>{
+setUpdatedItemsList(itemsInMyCity)
+},[itemsInMyCity])
 
-  const [updatedItemsList, setUpdatedItemsList] = useState([]);
 
-  // Sync items from Redux
-  useEffect(() => {
-    setUpdatedItemsList(itemsInMyCity);
-  }, [itemsInMyCity]);
+  const updateButton=(ref,setLeftButton,setRightButton)=>{
+const element=ref.current
+if(element){
+setLeftButton(element.scrollLeft>0)
+setRightButton(element.scrollLeft+element.clientWidth<element.scrollWidth)
 
-  // Filter items category-wise
-  const handleFilterByCategory = (category) => {
-    if (category === "All") {
-      setUpdatedItemsList(itemsInMyCity);
-    } else {
-      const filtered = itemsInMyCity?.filter((i) => i.category === category);
-      setUpdatedItemsList(filtered);
+}
+  }
+  const scrollHandler=(ref,direction)=>{
+    if(ref.current){
+      ref.current.scrollBy({
+        left:direction=="left"?-200:200,
+        behavior:"smooth"
+      })
     }
-  };
+  }
 
-  // Update arrow buttons visibility
-  const updateButton = (ref, setLeftButton, setRightButton) => {
-    const el = ref.current;
-    if (!el) return;
 
-    setLeftButton(el.scrollLeft > 0);
-    setRightButton(el.scrollLeft + el.clientWidth < el.scrollWidth);
-  };
 
-  // Attach scrolling listeners
-  useEffect(() => {
-    const cateEl = cateScrollRef.current;
-    const shopEl = shopScrollRef.current;
 
-    if (!cateEl || !shopEl) return;
+  useEffect(()=>{
+    if(cateScrollRef.current){
+      updateButton(cateScrollRef,setShowLeftCateButton,setShowRightCateButton)
+      updateButton(shopScrollRef,setShowLeftShopButton,setShowRightShopButton)
+      cateScrollRef.current.addEventListener('scroll',()=>{
+        updateButton(cateScrollRef,setShowLeftCateButton,setShowRightCateButton)
+      })
+      shopScrollRef.current.addEventListener('scroll',()=>{
+         updateButton(shopScrollRef,setShowLeftShopButton,setShowRightShopButton)
+      })
+     
+    }
 
-    const handleCateScroll = () =>
-      updateButton(
-        cateScrollRef,
-        setShowLeftCateButton,
-        setShowRightCateButton
-      );
+    return ()=>{cateScrollRef?.current?.removeEventListener("scroll",()=>{
+        updateButton(cateScrollRef,setShowLeftCateButton,setShowRightCateButton)
+      })
+         shopScrollRef?.current?.removeEventListener("scroll",()=>{
+        updateButton(shopScrollRef,setShowLeftShopButton,setShowRightShopButton)
+      })}
 
-    const handleShopScroll = () =>
-      updateButton(
-        shopScrollRef,
-        setShowLeftShopButton,
-        setShowRightShopButton
-      );
+  },[categories])
 
-    handleCateScroll();
-    handleShopScroll();
-
-    cateEl.addEventListener("scroll", handleCateScroll);
-    shopEl.addEventListener("scroll", handleShopScroll);
-
-    return () => {
-      cateEl.removeEventListener("scroll", handleCateScroll);
-      shopEl.removeEventListener("scroll", handleShopScroll);
-    };
-  }, []);
-
-  // Scroll left/right
-  const scrollHandler = (ref, direction) => {
-    const el = ref.current;
-    if (!el) return;
-
-    el.scrollBy({
-      left: direction === "left" ? -250 : 250,
-      behavior: "smooth",
-    });
-  };
 
   return (
-    <div className="w-screen min-h-screen flex flex-col gap-5 items-center bg-[#fff9f6] overflow-y-auto">
+    <div className='w-screen min-h-screen flex flex-col gap-5 items-center bg-[#fff9f6] overflow-y-auto'>
       <Nav />
 
-      {searchItems && searchItems.length > 0 && (
-        <div className="w-full max-w-6xl flex flex-col gap-5 items-start p-5 bg-white shadow-md rounded-2xl mt-4">
-          <h1 className="text-gray-900 text-2xl sm:text-3xl font-semibold norder-b border-gray-200 pb-2">
-            Search Results:{" "}
-          </h1>
-          <div className="w-full h-auto flex flex-wrap gap-[20px] justify-center">
-            {searchItems.map((item, index) => (
-              <FoodCard data={item} key={index} />
-            ))}
-          </div>
+      {searchItems && searchItems.length>0 && (
+        <div className='w-full max-w-6xl flex flex-col gap-5 items-start p-5 bg-white shadow-md rounded-2xl mt-4'>
+<h1 className='text-gray-900 text-2xl sm:text-3xl font-semibold border-b border-gray-200 pb-2'>
+  Search Results
+</h1>
+<div className='w-full h-auto flex flex-wrap gap-6 justify-center'>
+  {searchItems.map((item)=>(
+    <FoodCard data={item} key={item._id}/>
+  ))}
+</div>
         </div>
       )}
 
-      {/* CATEGORY SECTION */}
       <div className="w-full max-w-6xl flex flex-col gap-5 items-start p-[10px]">
-        <h1 className="text-gray-800 text-2xl sm:text-3xl">
-          Inspiration for your first order
-        </h1>
 
-        <div className="w-full relative">
-          {showLeftCateButton && (
-            <button
-              className="absolute left-0 top-1/2 -translate-y-1/2 bg-[#ff4d2d] text-white p-2 rounded-full shadow-lg z-10"
-              onClick={() => scrollHandler(cateScrollRef, "left")}
-            >
-              <FaChevronCircleLeft size={26} />
-            </button>
-          )}
+        <h1 className='text-gray-800 text-2xl sm:text-3xl'>Inspiration for your first order</h1>
+        <div className='w-full relative'>
+          {showLeftCateButton &&  <button className='absolute left-0 top-1/2 -translate-y-1/2 bg-[#ff4d2d] text-white p-2 rounded-full shadow-lg hover:bg-[#e64528] z-10' onClick={()=>scrollHandler(cateScrollRef,"left")}><FaCircleChevronLeft />
+          </button>}
+         
 
-          <div
-            className="w-full flex overflow-x-auto gap-4 pb-2 scroll-smooth no-scrollbar"
-            ref={cateScrollRef}
-          >
+          <div className='w-full flex overflow-x-auto gap-4 pb-2 ' ref={cateScrollRef}>
             {categories.map((cate, index) => (
-              <CategoryCard
-                key={index}
-                name={cate.category}
-                image={cate.image}
-                onClick={() => handleFilterByCategory(cate.category)}
-              />
+              <CategoryCard name={cate.category} image={cate.image} key={index} onClick={()=>handleFilterByCategory(cate.category)}/>
             ))}
           </div>
-
-          {showRightCateButton && (
-            <button
-              className="absolute right-0 top-1/2 -translate-y-1/2 bg-[#ff4d2d] text-white p-2 rounded-full shadow-lg z-10"
-              onClick={() => scrollHandler(cateScrollRef, "right")}
-            >
-              <FaChevronCircleRight size={26} />
-            </button>
-          )}
+          {showRightCateButton &&  <button className='absolute right-0 top-1/2 -translate-y-1/2 bg-[#ff4d2d] text-white p-2 rounded-full shadow-lg hover:bg-[#e64528] z-10' onClick={()=>scrollHandler(cateScrollRef,"right")}>
+<FaCircleChevronRight />
+          </button>}
+         
         </div>
       </div>
 
-      {/* SHOP SECTION */}
-      <div className="w-full max-w-6xl flex flex-col gap-5 items-start p-[10px]">
-        <h1 className="text-gray-800 text-2xl sm:text-3xl">
-          Best Shop in {currentCity}
-        </h1>
+      <div className='w-full max-w-6xl flex flex-col gap-5 items-start p-[10px]'>
+ <h1 className='text-gray-800 text-2xl sm:text-3xl'>Best Shop in {currentCity}</h1>
+ <div className='w-full relative'>
+          {showLeftShopButton &&  <button className='absolute left-0 top-1/2 -translate-y-1/2 bg-[#ff4d2d] text-white p-2 rounded-full shadow-lg hover:bg-[#e64528] z-10' onClick={()=>scrollHandler(shopScrollRef,"left")}><FaCircleChevronLeft />
+          </button>}
+         
 
-        <div className="w-full relative">
-          {showLeftShopButton && (
-            <button
-              className="absolute left-0 top-1/2 -translate-y-1/2 bg-[#ff4d2d] text-white p-2 rounded-full shadow-lg z-10"
-              onClick={() => scrollHandler(shopScrollRef, "left")}
-            >
-              <FaChevronCircleLeft size={26} />
-            </button>
-          )}
-
-          <div
-            className="w-full flex overflow-x-auto gap-4 pb-2 scroll-smooth no-scrollbar"
-            ref={shopScrollRef}
-          >
-            {(shopInMyCity || []).map((shop, index) => (
-              <CategoryCard
-                key={index}
-                name={shop.name}
-                image={shop.image}
-                onClick={() => navigate(`/shop/${shop._id}`)}
-              />
+          <div className='w-full flex overflow-x-auto gap-4 pb-2 ' ref={shopScrollRef}>
+            {shopInMyCity?.map((shop, index) => (
+              <CategoryCard name={shop.name} image={shop.image} key={index} onClick={()=>navigate(`/shop/${shop._id}`)}/>
             ))}
           </div>
-
-          {showRightShopButton && (
-            <button
-              className="absolute right-0 top-1/2 -translate-y-1/2 bg-[#ff4d2d] text-white p-2 rounded-full shadow-lg z-10"
-              onClick={() => scrollHandler(shopScrollRef, "right")}
-            >
-              <FaChevronCircleRight size={26} />
-            </button>
-          )}
+          {showRightShopButton &&  <button className='absolute right-0 top-1/2 -translate-y-1/2 bg-[#ff4d2d] text-white p-2 rounded-full shadow-lg hover:bg-[#e64528] z-10' onClick={()=>scrollHandler(shopScrollRef,"right")}>
+<FaCircleChevronRight />
+          </button>}
+         
         </div>
       </div>
 
-      {/* FOOD ITEMS SECTION */}
-      <div className="w-full max-w-6xl flex flex-col gap-5 items-start p-[10px]">
-        <h1 className="text-gray-800 text-2xl sm:text-3xl">
-          Suggested Food Items
-        </h1>
-        <div className="w-full h-auto flex flex-wrap gap-[20px] justify-center">
-          {updatedItemsList?.map((item, index) => {
-            return <FoodCard key={index} data={item} />;
-          })}
-        </div>
+      <div className='w-full max-w-6xl flex flex-col gap-5 items-start p-[10px]'>
+       <h1 className='text-gray-800 text-2xl sm:text-3xl'>
+        Suggested Food Items
+       </h1>
+
+<div className='w-full h-auto flex flex-wrap gap-[20px] justify-center'>
+{updatedItemsList?.map((item,index)=>(
+  <FoodCard key={index} data={item}/>
+))}
+</div>
+
+
       </div>
+
+
     </div>
-  );
+  )
 }
 
-export default UserDashBoard;
+export default UserDashboard

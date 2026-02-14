@@ -1,46 +1,16 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const initialState = {
-  myShopData: null,
-};
-
-const ownerSlice = createSlice({
-  name: "owner",
-  initialState,
-  reducers: {
-    setMyShopData: (state, action) => {
-      state.myShopData = action.payload;
+const ownerSlice=createSlice({
+    name:"owner",
+    initialState:{
+        myShopData:null
     },
-
-    addItemToShop: (state, action) => {
-      if (state.myShopData) {
-        state.myShopData.items.push(action.payload);
-      }
-    },
-
-    updateShopItems: (state, action) => {
-      if (state.myShopData) {
-        state.myShopData.items = action.payload;
-      }
-    },
-
-    updateSingleItem: (state, action) => {
-      if (state.myShopData) {
-        const index = state.myShopData.items.findIndex(
-          (item) => item._id === action.payload._id
-        );
-        if (index !== -1) {
-          state.myShopData.items[index] = action.payload;
+    reducers:{
+        setMyShopData:(state,action)=>{
+        state.myShopData=action.payload
         }
-      }
-    },
-  },
-});
+    }
+})
 
-export const {
-  setMyShopData,
-  addItemToShop,
-  updateShopItems,
-  updateSingleItem,
-} = ownerSlice.actions;
-export default ownerSlice.reducer;
+export const {setMyShopData}=ownerSlice.actions
+export default ownerSlice.reducer

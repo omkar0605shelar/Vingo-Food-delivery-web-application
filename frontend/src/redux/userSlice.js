@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, current } from "@reduxjs/toolkit";
 
 const userSlice = createSlice({
   name: "user",
@@ -7,124 +7,103 @@ const userSlice = createSlice({
     currentCity: null,
     currentState: null,
     currentAddress: null,
-    shopInMyCity: [],
-    itemsInMyCity: [],
+    shopInMyCity: null,
+    itemsInMyCity: null,
     cartItems: [],
     totalAmount: 0,
     myOrders: [],
     searchItems: null,
+    socket: null
   },
-
   reducers: {
     setUserData: (state, action) => {
-      state.userData = action.payload;
+      state.userData = action.payload
     },
-    setCity: (state, action) => {
-      state.currentCity = action.payload;
+    setCurrentCity: (state, action) => {
+      state.currentCity = action.payload
     },
-    setState: (state, action) => {
-      state.currentState = action.payload;
+    setCurrentState: (state, action) => {
+      state.currentState = action.payload
     },
-    setAddress: (state, action) => {
-      state.currentAddress = action.payload;
+    setCurrentAddress: (state, action) => {
+      state.currentAddress = action.payload
     },
-    setShopInMyCity: (state, action) => {
-      state.shopInMyCity = action.payload;
+    setShopsInMyCity: (state, action) => {
+      state.shopInMyCity = action.payload
     },
     setItemsInMyCity: (state, action) => {
-      state.itemsInMyCity = action.payload;
+      state.itemsInMyCity = action.payload
     },
-    setAddToCart: (state, action) => {
-      const cartItem = action.payload;
-
-      state.cartItems ??= [];
-
-      const existingItem = state.cartItems.find((i) => i._id === cartItem._id);
-
+    setSocket: (state, action) => {
+      state.socket = action.payload
+    },
+    addToCart: (state, action) => {
+      const cartItem = action.payload
+      const existingItem = state.cartItems.find(i => i.id == cartItem.id)
       if (existingItem) {
-        existingItem.quantity += cartItem.quantity || 1;
+        existingItem.quantity += cartItem.quantity
       } else {
-        state.cartItems.push({
-          ...cartItem,
-          quantity: cartItem.quantity || 1,
-        });
+        state.cartItems.push(cartItem)
       }
 
-      state.totalAmount = state.cartItems.reduce(
-        (sum, i) => sum + i.price * i.quantity,
-        0
-      );
+      state.totalAmount = state.cartItems.reduce((sum, i) => sum + i.price * i.quantity, 0)
+
     },
 
-    setUpdateQuantity: (state, action) => {
-      const { id, quantity } = action.payload;
+    setTotalAmount: (state, action) => {
+      state.totalAmount = action.payload
+    }
 
-      state.cartItems ??= [];
+    ,
 
-      const item = state.cartItems.find((i) => i._id === id);
-
+    updateQuantity: (state, action) => {
+      const { id, quantity } = action.payload
+      const item = state.cartItems.find(i => i.id == id)
       if (item) {
-        item.quantity = Math.max(1, quantity);
+        item.quantity = quantity
       }
-
-      state.totalAmount = state.cartItems.reduce(
-        (sum, i) => sum + i.price * i.quantity,
-        0
-      );
+      state.totalAmount = state.cartItems.reduce((sum, i) => sum + i.price * i.quantity, 0)
     },
 
-    setRemoveCartItem: (state, action) => {
-      state.cartItems ??= [];
-
-      state.cartItems = state.cartItems.filter((i) => i._id !== action.payload);
-
-      state.totalAmount = state.cartItems.reduce(
-        (sum, i) => sum + i.price * i.quantity,
-        0
-      );
+    removeCartItem: (state, action) => {
+      state.cartItems = state.cartItems.filter(i => i.id !== action.payload)
+      state.totalAmount = state.cartItems.reduce((sum, i) => sum + i.price * i.quantity, 0)
     },
+
     setMyOrders: (state, action) => {
-      state.myOrders = action.payload;
+      state.myOrders = action.payload
     },
-    setAddMyOrder: (state, action) => {
-      state.myOrders = [action.payload, ...state.myOrders];
+    addMyOrder: (state, action) => {
+      state.myOrders = [action.payload, ...state.myOrders]
+    }
+
+    ,
+    updateOrderStatus: (state, action) => {
+      const { orderId, shopId, status } = action.payload
+      const order = state.myOrders.find(o => o._id == orderId)
+      if (order) {
+        if (order.shopOrders && order.shopOrders.shop._id == shopId) {
+          order.shopOrders.status = status
+        }
+      }
     },
-    setUpdateOrderStatus: (state, action) => {
-      const { orderId, shopId, status, availableBoys } = action.payload;
 
-      const order = state.myOrders.find((o) => o._id === orderId);
-      if (!order) return;
-
-      // Update the shopOrder status
-      const shopOrder = order.shopOrders.find((s) => s.shop._id === shopId);
-      if (shopOrder) shopOrder.status = status;
-
-      // Merge/update availableBoys for this order
-      order.availableBoys = {
-        ...(order.availableBoys || {}),
-        ...availableBoys, // availableBoys should already be { [shopId]: [...] }
-      };
+    updateRealtimeOrderStatus: (state, action) => {
+      const { orderId, shopId, status } = action.payload
+      const order = state.myOrders.find(o => o._id == orderId)
+      if (order) {
+        const shopOrder = order.shopOrders.find(so => so.shop._id == shopId)
+        if (shopOrder) {
+          shopOrder.status = status
+        }
+      }
     },
+
     setSearchItems: (state, action) => {
-      state.searchItems = action.payload;
-    },
-  },
-});
+      state.searchItems = action.payload
+    }
+  }
+})
 
-export const {
-  setUserData,
-  setCity,
-  setState,
-  setAddress,
-  setShopInMyCity,
-  setItemsInMyCity,
-  setAddToCart,
-  setUpdateQuantity,
-  setRemoveCartItem,
-  setMyOrders,
-  setAddMyOrder,
-  setUpdateOrderStatus,
-  setSearchItems,
-} = userSlice.actions;
-
-export default userSlice.reducer;
+export const { setUserData, setCurrentAddress, setCurrentCity, setCurrentState, setShopsInMyCity, setItemsInMyCity, addToCart, updateQuantity, removeCartItem, setMyOrders, addMyOrder, updateOrderStatus, setSearchItems, setTotalAmount, setSocket ,updateRealtimeOrderStatus} = userSlice.actions
+export default userSlice.reducer
