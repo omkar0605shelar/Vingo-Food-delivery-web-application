@@ -17,9 +17,15 @@ import { socketHandler } from "./socket.js";
 const app = express();
 const server = http.createServer(app);
 
+const allowedOrigins = [
+  "https://vingo-food-delivery-applications.onrender.com",
+  "https://vingo-food-delivery-applications.onrender.com/",
+  "http://localhost:5173", // For local testing
+];
+
 const io = new Server(server, {
   cors: {
-    origin: "https://vingo-food-delivery-applications.onrender.com",
+    origin: allowedOrigins,
     credentials: true,
     methods: ["POST", "GET"],
   },
@@ -30,7 +36,13 @@ app.set("io", io);
 const port = process.env.PORT || 5000;
 app.use(
   cors({
-    origin: "https://vingo-food-delivery-applications.onrender.com",
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
   }),
 );
