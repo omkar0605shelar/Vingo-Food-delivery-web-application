@@ -18,6 +18,8 @@ const app = express();
 const server = http.createServer(app);
 
 const allowedOrigins = [
+  "https://vingo-food-delivery-application.onrender.com",
+  "https://vingo-food-delivery-application.onrender.com/",
   "https://vingo-food-delivery-applications.onrender.com",
   "https://vingo-food-delivery-applications.onrender.com/",
   "http://localhost:5173", // For local testing
