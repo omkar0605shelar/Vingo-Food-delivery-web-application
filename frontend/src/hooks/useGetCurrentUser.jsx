@@ -2,7 +2,7 @@ import axios from 'axios'
 import React, { useEffect } from 'react'
 import { serverUrl } from '../App'
 import { useDispatch } from 'react-redux'
-import { setUserData } from '../redux/userSlice'
+import { setAuthChecked, setUserData } from '../redux/userSlice'
 
 function useGetCurrentUser() {
     const dispatch=useDispatch()
@@ -14,6 +14,8 @@ function useGetCurrentUser() {
   
     } catch (error) {
         console.log(error)
+    } finally {
+        dispatch(setAuthChecked(true))
     }
 }
 fetchUser()

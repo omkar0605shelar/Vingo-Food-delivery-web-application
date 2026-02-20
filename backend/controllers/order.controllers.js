@@ -417,7 +417,7 @@ export const getCurrentOrder = async (req, res) => {
       });
 
     if (!assignment) {
-      return res.status(400).json({ message: "assignment not found" });
+      return res.status(200).json(null);
     }
     if (!assignment.order) {
       return res.status(400).json({ message: "order not found" });

@@ -25,12 +25,14 @@ import Shop from "./pages/Shop";
 import { useEffect } from "react";
 import { io } from "socket.io-client";
 import { setSocket } from "./redux/userSlice";
+import { ClipLoader } from "react-spinners";
 
 export const serverUrl =
   import.meta.env.VITE_SERVER_URL || "http://localhost:5000";
 function App() {
-  const { userData } = useSelector((state) => state.user);
+  const { userData, isAuthChecked } = useSelector((state) => state.user);
   const dispatch = useDispatch();
+
   useGetCurrentUser();
   useUpdateLocation();
   useGetCity();
@@ -51,6 +53,14 @@ function App() {
       socketInstance.disconnect();
     };
   }, [userData?._id]);
+
+  if (!isAuthChecked) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <ClipLoader color="#ff4d2d" size={50} />
+      </div>
+    );
+  }
 
   return (
     <Routes>

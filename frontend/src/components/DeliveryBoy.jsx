@@ -134,6 +134,7 @@ const totalEarning=todayDeliveries.reduce((sum,d)=>sum + d.count*ratePerDelivery
  
 
   useEffect(()=>{
+    if (!userData) return;
 getAssignments()
 getCurrentOrder()
 handleTodayDeliveries()
