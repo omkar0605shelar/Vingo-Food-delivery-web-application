@@ -69,6 +69,10 @@ function App() {
         element={!userData ? <SignUp /> : <Navigate to={"/"} />}
       />
       <Route
+        path="/signin"
+        element={!userData ? <SignIn /> : <Navigate to={"/"} />}
+      />
+      <Route
         path="/forgot-password"
         element={!userData ? <ForgotPassword /> : <Navigate to={"/"} />}
       />
